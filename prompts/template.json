@@ -1,0 +1,24 @@
+{
+  "task1": {
+    "1.0": {
+      "model": "model name",
+      "temperature": 0.2,
+      "content": "prompt message",
+      "role": "System role",
+      "output_columns": ["columns", "to", "expect", "as", "output"],
+      "comment": "leave a comment",
+      "creation_date": "06-02-2025"
+    }
+  },
+  "task2": {
+    "1.0": {
+      "model": "model name",
+      "temperature": 0.2,
+      "content": "prompt message",
+      "role": "System role",
+      "output_columns": ["columns", "to", "expect", "as", "output"],
+      "comment": "leave a comment",
+      "creation_date": "05-02-2025"
+    }
+  }
+}

@@ -1,0 +1,23 @@
+[project]
+name = "llm-toolbox"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Juliette Bourquin",email = "bourquinjuliette@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "mistralai (>=1.5.0,<2.0.0)",
+    "openai (>=1.64.0,<2.0.0)",
+    "numpy (>=2.2.3,<3.0.0)",
+    "anthropic (>=0.46.0,<0.47.0)",
+    "pdfplumber (>=0.11.5,<0.12.0)",
+    "pandas (>=2.2.3,<3.0.0)",
+    "python-dotenv (>=1.0.1,<2.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
