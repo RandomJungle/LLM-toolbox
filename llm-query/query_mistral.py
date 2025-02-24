@@ -18,6 +18,9 @@ def query_embeddings(
         model_name: Optional[str] = 'mistral-embed',
         num_chunks: Optional[int] = 1) -> pd.DataFrame:
 
+    if not 'id' in dataframe.columns:
+        dataframe['id'] = dataframe.index + 1
+
     data = dataframe[['id', 'text']]
     chunks = chunk_dataframe(data, num_chunks)
     outputs = []
