@@ -72,3 +72,6 @@ poetry.lock
 
 # Avoid commit of outputs
 outputs/
+
+# Pycharm files
+.idea*
