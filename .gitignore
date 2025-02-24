@@ -7,9 +7,6 @@ data/
 .env
 *.env
 
-# pycharm
-.idea/
-
 # virtualenv
 venv/
 
@@ -75,3 +72,5 @@ outputs/
 
 # Pycharm files
 .idea*
+.idea/
+idea/
