@@ -1,6 +1,6 @@
 import json
 import os
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Tuple
 
 import pandas as pd
 import pdfplumber
@@ -28,15 +28,18 @@ def read_json_dataframe(
 def read_prompt_file(
         file_path: str,
         task: str,
-        version: Optional[str] = 'latest') -> Dict:
+        version: Optional[str] = 'latest') -> Tuple[Dict, str]:
     with open(file_path, 'r') as prompt_file:
         prompt_dict = json.loads(prompt_file.read())
     task_dict = prompt_dict.get(task)
     if version == 'latest':
-        selected_prompt = task_dict.get(max(task_dict.keys()))
+        version = str(max(
+            [float(key) for key in task_dict.keys() if not 'template' in key]
+        ))
+        selected_prompt = task_dict.get(version)
     else:
         selected_prompt = task_dict.get(version)
-    return selected_prompt
+    return selected_prompt, version
 
 
 def convert_pdf2txt(pdf_path: str):

@@ -169,11 +169,13 @@ def query_with_document(
         document: str,
         prompt: Dict,
         output_path: str,
-        stream: Optional[bool] = False) -> None:
+        stream: Optional[bool] = False,
+        client: Optional[Mistral] = None) -> str:
 
-    client = Mistral(
-        api_key=os.getenv('MISTRAL_API_KEY', '')
-    )
+    if not client:
+        client = Mistral(
+            api_key=os.getenv('MISTRAL_API_KEY', '')
+        )
 
     model_name = prompt.get('model')
     temperature = prompt.get('temperature')
@@ -211,15 +213,79 @@ def query_with_document(
     with open(output_path, 'w') as output_file:
         output_file.write(content)
 
+    return content
+
+
+def double_query(
+        document: str,
+        prompt: Dict,
+        output_path: str,
+        stream: Optional[bool] = False) -> None:
+
+    client = Mistral(
+        api_key=os.getenv('MISTRAL_API_KEY', '')
+    )
+    model_name = prompt.get('model')
+    temperature = 0.2
+
+    base_content = query_with_document(
+        document=document,
+        prompt=prompt,
+        stream=True,
+        output_path=output_path
+    )
+
+    messages = [
+        {
+            'content': prompt.get('role'),
+            'role': 'system',
+        },
+        {
+            'content': (
+                'Rewrite the following letter, '
+                'given between <letter></letter> tags, '
+                'modifying all the keywords to other '
+                'words with equivalent meaning: '
+                f'<letter>{base_content}</letter>'
+            ),
+            'role': 'user',
+        },
+    ]
+    if not stream:
+        response = client.chat.complete(
+            model=model_name,
+            messages=messages,
+            temperature=temperature
+        )
+        content = response.choices[0].message.content
+    else:
+        response = client.chat.stream(
+            model=model_name,
+            messages=messages,
+            temperature=temperature
+        )
+        collected_messages = []
+        for res_chunk in response:
+            chunk_content = res_chunk.data.choices[0].delta.content
+            collected_messages.append(chunk_content)
+            print(chunk_content)
+        content = ''.join([m for m in collected_messages if m is not None])
+
+    with open(output_path, 'a') as output_file:
+        output_file.write('\n\n' + '*' * 100 + '\n\n')
+        output_file.write(content)
+
+    return content
+
 
 if __name__ == '__main__':
 
     load_dotenv(find_dotenv())
 
     task = 'redaction'
-    version = '1.5'
+    version = 'latest'
 
-    prompt_dict = read_prompt_file(
+    prompt_dict, version = read_prompt_file(
         os.getenv('PROMPT_FILE_PATH'),
         task=task,
         version=version
@@ -228,5 +294,8 @@ if __name__ == '__main__':
         document='',
         prompt=prompt_dict,
         stream=True,
-        output_path=f'/home/juliette/projects/llm_toolbox/outputs/{version}.txt'
+        output_path=os.path.join(
+            os.getenv('OUTPUT_DIR_PATH'),
+            f'{version}.txt'
+        )
     )
